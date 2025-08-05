@@ -1,7 +1,12 @@
 import express from "express";
 import { transactions } from "./data";
 
+
 const app = express();
+
+export function getMessage() {
+  return { message: "Hello, unit test!" };
+}
 
 app.get("/", (_req, res) => {
   res.json({ message: "Transactions API" });
