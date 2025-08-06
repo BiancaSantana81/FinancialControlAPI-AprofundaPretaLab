@@ -5,7 +5,7 @@ import { transactions } from "./data";
 const app = express();
 
 export function getMessage() {
-  return { message: "Hello, unit test!" };
+  return { message: "Hello, unit test!!" };
 }
 
 app.get("/", (_req, res) => {
