@@ -9,6 +9,13 @@ export async function getTransitionById(id: string): Promise<Transaction> {
   return transaction;
 }
 
+export async function createTransaction(transaction: Transaction): Promise<Transaction> {
+  const exists = transactions.find((t) => t.id === transaction.id);
+  if (exists) throw new Error("Transaction with this ID already exists");
+  transactions.push(transaction);
+  return transaction;
+}
+
 app.get("/:id", async (req, res) => {
   const id = req.params.id;
 
