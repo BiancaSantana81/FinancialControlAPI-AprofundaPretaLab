@@ -1,4 +1,4 @@
-name: deploy-to-google
+name: pipeline-main
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-unit:
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,15 +30,35 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-      - name: Run integration tests
-        run: npm run test:integration
+  test-integration:
+  runs-on: ubuntu-latest
+
+  strategy:
+    matrix:
+      node-version: [20.x]
+
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: "npm"
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run integration tests
+      run: npm run test:integration
 
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
     needs:
-      - test
+      - test-unit
+      - test-integration
 
     permissions:
       contents: "read"
