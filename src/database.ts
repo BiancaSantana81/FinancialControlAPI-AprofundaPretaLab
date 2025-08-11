@@ -6,9 +6,9 @@ dotenv.config();
 export async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URL || "default");
-    console.log("MongoDB conectado!");
+    console.log("Database connect!");
   } catch (error) {
-    console.error("Erro na conexão com MongoDB:", error);
+    console.error("Error connecting to MongoDB: ", error);
     process.exit(1);
   }
 }
