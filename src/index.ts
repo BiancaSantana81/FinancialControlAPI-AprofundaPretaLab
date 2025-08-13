@@ -43,8 +43,8 @@ app.get("/", (_req, res) => {
   res.json({ message: "Transactions API" });
 });
 
-app.get("/transactions", (_req, res) => {
-  res.json({ transactions });
-});
+// app.get("/transactions", (_req, res) => {
+//   res.json({ transactions });
+// });
 
 export default app;
