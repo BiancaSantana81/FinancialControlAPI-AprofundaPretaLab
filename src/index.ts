@@ -1,8 +1,15 @@
 import express from "express";
 import { Transaction, transactions } from "./data";
+import { ai } from "./services/prompt";
 
 const app = express();
 app.use(express.json());
+
+app.post("/ai", async (req, res) => {
+  const { prompt } = req.body;
+  const result = await ai(prompt);
+  res.json(result);
+});
 
 export async function getTransitionById(id: string): Promise<Transaction> {
   const transaction = transactions.find((t) => t.id === id);
@@ -46,5 +53,6 @@ app.get("/", (_req, res) => {
 app.get("/transactions", (_req, res) => {
   res.json({ transactions });
 });
+
 
 export default app;
