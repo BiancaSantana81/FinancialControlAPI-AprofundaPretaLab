@@ -1,4 +1,4 @@
-import { Transaction, transactions } from '../../src/data';
+import { Transaction, transactions } from '../../src/modules/transactions/transaction.mock'
 import { createTransaction } from '../../src/index';
 
 describe("createTransaction", () => {

@@ -1,13 +1,13 @@
 import express from "express";
-import { Transaction, transactions } from "./data";
-import { ai } from "./services/prompt";
+import { Transaction, transactions } from "./modules/transactions/transaction.mock";
+import { handleConversation } from "./shared/services/prompt";
 
 const app = express();
 app.use(express.json());
 
 app.post("/ai", async (req, res) => {
   const { prompt } = req.body;
-  const result = await ai(prompt);
+  const result = await handleConversation(prompt);
   res.json(result);
 });
 

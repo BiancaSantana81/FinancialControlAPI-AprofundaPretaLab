@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../src/index";
-import { Transaction, transactions } from "../../src/data";
+import { Transaction, transactions } from '../../src/modules/transactions/transaction.mock'
 
 describe("POST /transactions", () => {
 

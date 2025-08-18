@@ -19,7 +19,12 @@ export const chat = async (prompt: any[]) => {
   const result = await geminiClient.models.generateContent(
     {
       model: "gemini-2.5-flash",
-      contents: prompt
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {type: "object", properties: {response: {type: "string"}}},
+        systemInstruction: "Você é um assistente de IA útil e amigável.",
+      }
     }
   );
 
