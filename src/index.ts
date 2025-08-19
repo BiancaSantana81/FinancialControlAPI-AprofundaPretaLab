@@ -2,6 +2,7 @@ import express from "express";
 import { handleConversation } from "./shared/services/prompt";
 import { createTransaction, getAllTransactions, getTransactionById } from "./modules/transactions/transaction";
 import { productsRouter } from "./modules/products/product.routes"
+import { checkoutRouter } from "./modules/purchase/checkout.routes";
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api/products", productsRouter);
+app.use("/api/checkout", checkoutRouter);
 
 // transaction post
 app.post("/transactions", async (req, res) => {
