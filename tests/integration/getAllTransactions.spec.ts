@@ -18,7 +18,7 @@ describe("Transações (com database)", () => {
 
     newTransaction = {
       date: "2025-01-02T00:00:00Z",
-      description: "Transação de teste",
+      description: "Transação 1",
       amount: 100,
       type: "income",
       category: "Teste",
@@ -38,8 +38,8 @@ describe("Transações (com database)", () => {
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body.length).toBeGreaterThan(0);
-      expect(response.body[0]).toHaveProperty("description", "Compra de livros");
-      expect(response.body[0]).toHaveProperty("amount", 120.5);
+      expect(response.body[0]).toHaveProperty("description", "Transação 1");
+      expect(response.body[0]).toHaveProperty("amount", 100);
     });
   });
 });

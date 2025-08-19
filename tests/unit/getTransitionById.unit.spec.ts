@@ -3,15 +3,14 @@ import mongoose from 'mongoose';
 import app from "../../src/index";
 import { getTransactionById } from '../../src/modules/transactions/transaction';
 
-describe("getTransitionById", () => {
+describe("getTransactionById", () => {
+  let transactionId: string;
 
   beforeAll(async () => {
     await mongoose.connect(process.env.MONGODB_URL || "default");
-
   });
 
   beforeEach(async () => {
-
     const newTransaction = {
       date: "2025-01-02T00:00:00Z",
       description: "Nova transação",
@@ -22,22 +21,18 @@ describe("getTransitionById", () => {
 
     const response = await request(app)
       .post("/transactions")
-      .send(newTransaction)
+      .send(newTransaction);
 
+    transactionId = response.body._id;
+  });
+
+  afterAll(async () => {
+    await mongoose.disconnect();
   });
 
   it("deve retornar uma transação pelo id", async () => {
-    const id = "1";
-    const result = await getTransactionById(id);
+    const result = await getTransactionById(transactionId);
 
-    expect(result).toEqual({
-      id: "1",
-      amount: 5000,
-      description: "Salário de Julho",
-      category: "Salário",
-      date: "2024-07-15T10:00:00Z",
-      type: "income",
-    });
-
+    expect(result).toHaveProperty("description", "Nova transação");
   });
 });
