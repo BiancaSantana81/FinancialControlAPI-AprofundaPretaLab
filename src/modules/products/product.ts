@@ -26,7 +26,6 @@ export async function createProduct(product: Product): Promise<Product> {
   };
 }
 
-// Busca produto por ID
 export async function getProductById(id: string): Promise<Product> {
   const product = await ProductModel.findById(id);
   if (!product) throw new Error("Produto não encontrado.");
