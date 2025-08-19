@@ -20,7 +20,7 @@ describe("getTransactionById", () => {
     };
 
     const response = await request(app)
-      .post("/transactions")
+      .post("/api/transactions")
       .send(newTransaction);
 
     transactionId = response.body._id;

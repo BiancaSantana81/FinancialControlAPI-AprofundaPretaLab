@@ -14,3 +14,15 @@ export async function createPurchase(purchaseData: any) {
 
   return purchase.toObject();
 }
+
+export async function getAllPurchases() {
+  return await PurchaseModel.find().sort({ date: -1 });
+}
+
+export async function getPurchaseById(id: string) {
+  const purchase = await PurchaseModel.findById(id);
+  if (!purchase) {
+    throw new Error("Compra não encontrada.");
+  }
+  return purchase.toObject();
+}

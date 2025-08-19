@@ -25,7 +25,7 @@ describe("Transações (com database)", () => {
     };
 
     const response = await request(app)
-      .post("/transactions")
+      .post("/api/transactions")
       .send(newTransaction);
 
     transactionResponse = response.body;
@@ -33,7 +33,7 @@ describe("Transações (com database)", () => {
 
   describe("GET /transactions", () => {
     it("deve retornar todas as transações do database", async () => {
-      const response = await request(app).get("/transactions");
+      const response = await request(app).get("/api/transactions");
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);

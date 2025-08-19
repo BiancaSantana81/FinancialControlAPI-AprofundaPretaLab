@@ -25,7 +25,7 @@ describe("Transações (com database)", () => {
     };
 
     const response = await request(app)
-      .post("/transactions")
+      .post("/api/transactions")
       .send(newTransaction);
 
     transactionResponse = response.body;
@@ -36,7 +36,7 @@ describe("Transações (com database)", () => {
   describe("GET /transactions", () => {
 
     it("deve retornar uma transação do database", async () => {
-      const response = await request(app).get(`/transactions/${transactionResponse._id}`);
+      const response = await request(app).get(`/api/transactions/${transactionResponse._id}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("description", "Transação de teste");
@@ -45,7 +45,7 @@ describe("Transações (com database)", () => {
 
     it("deve retornar 404 se a transação não existir", async () => {
       const fakeId = new mongoose.Types.ObjectId();
-      const response = await request(app).get(`/transactions/${fakeId}`);
+      const response = await request(app).get(`/api/transactions/${fakeId}`);
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Transaction not found");

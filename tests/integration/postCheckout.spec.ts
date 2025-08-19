@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import request from "supertest";
 import app from "../../src/index";
 import { ProductModel } from "../../src/modules/products/product.model";
-import { PurchaseModel } from "../../src/modules/purchase/purchase.model"
 
 describe("POST /api/checkout", () => {
   let productA: any;

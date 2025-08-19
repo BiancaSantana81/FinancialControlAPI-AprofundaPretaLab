@@ -22,7 +22,7 @@ describe("POST /transactions", () => {
     };
 
     const response = await request(app)
-      .post("/transactions")
+      .post("/api/transactions")
       .send(newTransaction)
 
     expect(response.status).toBe(201);
