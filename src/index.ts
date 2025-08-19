@@ -1,6 +1,7 @@
 import express from "express";
 import { handleConversation } from "./shared/services/prompt";
 import { createTransaction, getAllTransactions, getTransactionById } from "./modules/transactions/transaction";
+import { productsRouter } from "./modules/products/product.routes"
 
 const app = express();
 app.use(express.json());
@@ -9,6 +10,7 @@ app.get("/", (_req, res) => {
   res.status(200).json({ message: "API is running" });
 });
 
+app.use("/api/products", productsRouter);
 
 // transaction post
 app.post("/transactions", async (req, res) => {
