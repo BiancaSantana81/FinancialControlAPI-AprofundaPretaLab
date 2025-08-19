@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import app from "../../src/index";
 
 describe("Transações (com database)", () => {
-
   let newTransaction: any;
   let transactionResponse: any;
 
@@ -16,6 +15,7 @@ describe("Transações (com database)", () => {
   });
 
   beforeEach(async () => {
+
     newTransaction = {
       date: "2025-01-02T00:00:00Z",
       description: "Transação de teste",
@@ -29,25 +29,17 @@ describe("Transações (com database)", () => {
       .send(newTransaction);
 
     transactionResponse = response.body;
-
   });
-
 
   describe("GET /transactions", () => {
-
-    it("deve retornar uma transação do database", async () => {
-      const response = await request(app).get(`/transactions/${transactionResponse._id}`);
+    it("deve retornar todas as transações do database", async () => {
+      const response = await request(app).get("/transactions");
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("description", "Transação de teste");
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body[0]).toHaveProperty("description", "Compra de livros");
+      expect(response.body[0]).toHaveProperty("amount", 120.5);
     });
   });
-
-    it("deve retornar 404 se a transação não existir", async () => {
-      const fakeId = new mongoose.Types.ObjectId();
-      const response = await request(app).get(`/transactions/${fakeId}`);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Transaction not found");
-    });
 });

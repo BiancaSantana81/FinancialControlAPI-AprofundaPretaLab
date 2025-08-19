@@ -1,9 +1,24 @@
 import express from "express";
-import { Transaction, transactions } from "./modules/transactions/transaction.mock";
 import { handleConversation } from "./shared/services/prompt";
+import { createTransaction, getAllTransactions, getTransactionById } from "./modules/transactions/transaction";
 
 const app = express();
 app.use(express.json());
+
+app.get("/", (_req, res) => {
+  res.status(200).json({ message: "API is running" });
+});
+
+
+// transaction post
+app.post("/transactions", async (req, res) => {
+  try {
+    const created = await createTransaction(req.body);
+    res.status(201).json(created);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+});
 
 app.post("/ai", async (req, res) => {
   const { prompt } = req.body;
@@ -11,48 +26,18 @@ app.post("/ai", async (req, res) => {
   res.json(result);
 });
 
-export async function getTransitionById(id: string): Promise<Transaction> {
-  const transaction = transactions.find((t) => t.id === id);
-  if (!transaction) throw new Error("Transaction not found");
-  return transaction;
-}
-
-export async function createTransaction(transaction: Transaction): Promise<Transaction> {
-  const exists = transactions.find((t) => t.id === transaction.id);
-  if (exists) throw new Error("Transaction with this ID already exists");
-  transactions.push(transaction);
-  return transaction;
-}
-
-app.post("/transactions", async (req, res) => {
-  const transaction: Transaction = req.body;
-
-  try {
-    const created = await createTransaction(transaction);
-    res.status(201).json(created);
-  } catch (error: any) {
-    res.status(400).json({ message: error.message || "Failed to create transaction" });
-  }
+app.get("/transactions", async (_req, res) => {
+  const all = await getAllTransactions();
+  res.json(all);
 });
 
-app.get("/:id", async (req, res) => {
-  const id = req.params.id;
-
+app.get("/transactions/:id", async (req, res) => {
   try {
-    const transaction = await getTransitionById(id);
+    const transaction = await getTransactionById(req.params.id);
     res.json(transaction);
   } catch (error: any) {
-    res.status(404).json({ message: error.message || `Transaction with ${id} not found.` });
+    res.status(404).json({ message: error.message });
   }
 });
-
-app.get("/", (_req, res) => {
-  res.json({ message: "Transactions API" });
-});
-
-app.get("/transactions", (_req, res) => {
-  res.json({ transactions });
-});
-
 
 export default app;

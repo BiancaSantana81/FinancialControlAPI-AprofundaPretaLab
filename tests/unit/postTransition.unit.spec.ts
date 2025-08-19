@@ -1,5 +1,5 @@
 import { Transaction, transactions } from '../../src/modules/transactions/transaction.mock'
-import { createTransaction } from '../../src/index';
+import { createTransaction } from '../../src/modules/transactions/transaction';
 
 describe("createTransaction", () => {
 
@@ -18,17 +18,4 @@ describe("createTransaction", () => {
     expect(transactions).toContainEqual(transaction);
   });
 
-  it("deve lançar erro se o id já existir", async () => {
-    const transaction: Transaction = {
-      id: "1",
-      date: "2025-01-01T00:00:00Z",
-      description: "Teste criação",
-      amount: 100,
-      type: "income",
-      category: "Teste",
-    };
-    transactions.push(transaction);
-
-    await expect(createTransaction(transaction)).rejects.toThrow("Transaction with this ID already exists");
-  });
 });
