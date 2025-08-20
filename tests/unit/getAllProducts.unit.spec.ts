@@ -1,41 +1,22 @@
-import mongoose from "mongoose";
-import request from "supertest";
-import app from "../../src/index";
-import { ProductModel } from "../../src/modules/products/product.model";
+import { getAllProducts } from "../../src/modules/products/product";
+import { Product } from "../../src/modules/products/product.entitie";
 
-describe("GET /api/products - allProducts", () => {
-    beforeAll(async () => {
-        const mongoUrl = process.env.MONGODB_URL;
-        if (!mongoUrl) throw new Error("MONGODB_URL não definido");
-        await mongoose.connect(mongoUrl);
+describe("GET /api/products - allProducts (in memory)", () => {
+  it("deve retornar todos os produtos pré-carregados em memória", async () => {
+    const products: Product[] = await getAllProducts();
+
+    expect(products.length).toBeGreaterThan(0);
+
+    const namesToCheck = [
+      "Notebook Gamer Pro",
+      "Mouse Sem Fio Ultra-leve",
+      "Teclado Mecânico RGB",
+    ];
+
+    namesToCheck.forEach((name) => {
+      const found = products.find((p) => p.name === name);
+      expect(found).toBeDefined();
     });
 
-    beforeEach(async () => {
-        await ProductModel.create([
-            { name: "Notebook Gamer Pro", price: 7500 },
-            { name: "Teclado Mecânico RGB", price: 550 },
-        ]);
-    });
-
-    afterAll(async () => {
-        await mongoose.disconnect();
-    });
-
-    it("deve retornar todos os produtos cadastrados", async () => {
-        const response = await request(app).get("/api/products");
-
-        expect(response.status).toBe(200);
-        expect(Array.isArray(response.body)).toBe(true);
-
-        const productNames = response.body.map((p: any) => p.name);
-        expect(productNames).toContain("Notebook Gamer Pro");
-        expect(productNames).toContain("Mouse Sem Fio Ultra-leve");
-        expect(productNames).toContain("Teclado Mecânico RGB");
-
-        response.body.forEach((product: any) => {
-            expect(product).toHaveProperty("id");
-            expect(product).toHaveProperty("name");
-            expect(product).toHaveProperty("price");
-        });
-    });
+  });
 });

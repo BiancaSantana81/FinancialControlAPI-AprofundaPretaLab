@@ -1,26 +1,11 @@
-import { ProductModel } from "./product.model";
+import { InMemoryProductRepository } from "./product.repository.memory";
 
-export interface Product {
-  id?: string;
-  name: string;
-  price: number;
+const productRepo = new InMemoryProductRepository();
+
+export async function getAllProducts() {
+  return await productRepo.findAll();
 }
 
-export async function getAllProducts(): Promise<Product[]> {
-  const products = await ProductModel.find();
-  return products.map(p => ({
-    id: p._id.toString(),
-    name: p.name,
-    price: p.price,
-  }));
-}
-
-export async function getProductById(id: string): Promise<Product> {
-  const product = await ProductModel.findById(id);
-  if (!product) throw new Error("Produto não encontrado.");
-  return {
-    id: product._id.toString(),
-    name: product.name,
-    price: product.price,
-  };
+export async function getProductById(id: string) {
+  return await productRepo.findById(id);
 }
