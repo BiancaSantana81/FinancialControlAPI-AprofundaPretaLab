@@ -1,18 +1,30 @@
-import { getTransitionById } from '../../src/index'
+import { createTransactionRepository } from '../../src/modules/transactions/transaction.repository.factory';
+import { Transaction } from '../../src/modules/transactions/transaction.entitie';
 
-describe("getTransitionById", () => {
+describe("getTransactionById (unit)", () => {
+  let repo = createTransactionRepository();
+  let transactionId: string;
+
+  beforeEach(async () => {
+    const newTransaction = new Transaction(
+      "",
+      200,
+      "Nova transação",
+      "2025-01-02T00:00:00Z",
+      "expense",
+      "Teste"
+    );
+
+    const created = await repo.save(newTransaction);
+    transactionId = created.id;
+  });
+
   it("deve retornar uma transação pelo id", async () => {
-    const id = "1";
-    const result = await getTransitionById(id);
+    const result = await repo.findById(transactionId);
 
-    expect(result).toEqual({
-      id: "1",
-      amount: 5000,
-      description: "Salário de Julho",
-      category: "Salário",
-      date: "2024-07-15T10:00:00Z",
-      type: "income",
-    });
-
+    expect(result).toHaveProperty("description", "Nova transação");
+    expect(result.amount).toBe(200);
+    expect(result.type).toBe("expense");
+    expect(result.category).toBe("Teste");
   });
 });

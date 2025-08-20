@@ -1,58 +1,28 @@
 import express from "express";
-import { Transaction, transactions } from "./modules/transactions/transaction.mock";
 import { handleConversation } from "./shared/services/prompt";
+import { productsRouter } from "./modules/products/product.routes";
+import { checkoutRouter } from "./modules/purchase/checkout.routes";
+import { purchaseRouter } from "./modules/purchase/purchase.routes";
+import { transactionsRouter } from "./modules/transactions/transactions.routes";
 
 const app = express();
 app.use(express.json());
 
+app.get("/", (_req, res) => {
+  res.status(200).json({ message: "API is running" });
+});
+
+// Rotas agrupadas por módulo
+app.use("/api/products", productsRouter);
+app.use("/api/checkout", checkoutRouter);
+app.use("/api/purchases", purchaseRouter);
+app.use("/api/transactions", transactionsRouter);
+
+// Rota AI
 app.post("/ai", async (req, res) => {
   const { prompt } = req.body;
   const result = await handleConversation(prompt);
   res.json(result);
 });
-
-export async function getTransitionById(id: string): Promise<Transaction> {
-  const transaction = transactions.find((t) => t.id === id);
-  if (!transaction) throw new Error("Transaction not found");
-  return transaction;
-}
-
-export async function createTransaction(transaction: Transaction): Promise<Transaction> {
-  const exists = transactions.find((t) => t.id === transaction.id);
-  if (exists) throw new Error("Transaction with this ID already exists");
-  transactions.push(transaction);
-  return transaction;
-}
-
-app.post("/transactions", async (req, res) => {
-  const transaction: Transaction = req.body;
-
-  try {
-    const created = await createTransaction(transaction);
-    res.status(201).json(created);
-  } catch (error: any) {
-    res.status(400).json({ message: error.message || "Failed to create transaction" });
-  }
-});
-
-app.get("/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const transaction = await getTransitionById(id);
-    res.json(transaction);
-  } catch (error: any) {
-    res.status(404).json({ message: error.message || `Transaction with ${id} not found.` });
-  }
-});
-
-app.get("/", (_req, res) => {
-  res.json({ message: "Transactions API" });
-});
-
-app.get("/transactions", (_req, res) => {
-  res.json({ transactions });
-});
-
 
 export default app;

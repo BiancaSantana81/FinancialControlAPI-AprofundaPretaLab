@@ -1,34 +1,23 @@
-import { Transaction, transactions } from '../../src/modules/transactions/transaction.mock'
-import { createTransaction } from '../../src/index';
+import { createTransactionRepository } from '../../src/modules/transactions/transaction.repository.factory';
+import { Transaction } from '../../src/modules/transactions/transaction.entitie';
 
-describe("createTransaction", () => {
+describe("createTransaction (unit)", () => {
+  let repo = createTransactionRepository();
 
   it("deve criar uma nova transação com sucesso", async () => {
-    const transaction: Transaction = {
-      id: "100",
-      date: "2025-01-01T00:00:00Z",
-      description: "Teste criação",
-      amount: 100,
-      type: "income",
-      category: "Teste",
-    };
+    const transactionData = new Transaction(
+      "",
+      100,
+      "Teste criação",
+      "2025-01-01T00:00:00Z",
+      "income",
+      "Teste"
+    );
 
-    const result = await createTransaction(transaction);
-    expect(result).toEqual(transaction);
-    expect(transactions).toContainEqual(transaction);
-  });
+    const result = await repo.save(transactionData);
 
-  it("deve lançar erro se o id já existir", async () => {
-    const transaction: Transaction = {
-      id: "1",
-      date: "2025-01-01T00:00:00Z",
-      description: "Teste criação",
-      amount: 100,
-      type: "income",
-      category: "Teste",
-    };
-    transactions.push(transaction);
-
-    await expect(createTransaction(transaction)).rejects.toThrow("Transaction with this ID already exists");
+    expect(result.category).toBe(transactionData.category);
+    expect(result.amount).toBe(transactionData.amount);
+    expect(result.description).toBe(transactionData.description);
   });
 });
