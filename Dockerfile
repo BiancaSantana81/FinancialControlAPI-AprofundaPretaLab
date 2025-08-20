@@ -28,10 +28,6 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/dist ./dist
 
-# Expose the port your application listens on
-# Cloud Run expects your application to listen on the port specified by the PORT environment variable
-ENV PORT 3000
-EXPOSE ${PORT}
 
 # Define the command to run your application
 # Assuming your built JavaScript entry point is in dist/index.js (adjust as needed)

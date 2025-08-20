@@ -88,7 +88,6 @@ jobs:
         region: ${{ secrets.SERVICE_REGION }}
         env_vars: MONGODB_URL=${{ secrets.MONGODB_URL }}
         source: ./
-        port: 3000
 
     - name: 📤 Show Output
       run: echo ${{ steps.deploy.outputs.url }}
