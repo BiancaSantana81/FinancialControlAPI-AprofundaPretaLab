@@ -1,44 +1,22 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env' });
+import { createTransactionRepository } from '../../src/modules/transactions/transaction.repository.factory';
+import { Transaction } from '../../src/modules/transactions/transaction.entitie';
 
-import mongoose from 'mongoose';
-import { getAllTransactions, createTransaction } from '../../src/modules/transactions/transaction';
-
-describe("getAllTransactions", () => {
-  beforeAll(async () => {
-    const mongoUrl = process.env.MONGODB_URL;
-    if (!mongoUrl) throw new Error("MONGODB_URL não definido");
-    await mongoose.connect(mongoUrl);
-  });
+describe("getAllTransactions (unit)", () => {
+  let repo = createTransactionRepository();
 
   beforeEach(async () => {
 
-    await createTransaction({
-      date: "2025-01-01T00:00:00Z",
-      description: "Transação 1",
-      amount: 100,
-      type: "income",
-      category: "Teste",
-    });
+    repo = createTransactionRepository();
 
-    await createTransaction({
-      date: "2025-01-02T00:00:00Z",
-      description: "Transação 2",
-      amount: 200,
-      type: "expense",
-      category: "Teste",
-    });
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
+    await repo.save(new Transaction("", 100, "Transação 1", "2025-01-01T00:00:00Z", "income", "Teste"));
+    await repo.save(new Transaction("", 200, "Transação 2", "2025-01-02T00:00:00Z", "expense", "Teste"));
   });
 
   it("deve retornar todas as transações", async () => {
-    const result = await getAllTransactions();
+    const result = await repo.findAll();
 
-    const descriptions = result.map(t => t.description);
-    expect(descriptions).toContain("Transação 1");
-    expect(descriptions).toContain("Transação 2");
+    expect(result).toHaveLength(2);
+    expect(result[0].description).toEqual("Transação 1");
+
   });
 });

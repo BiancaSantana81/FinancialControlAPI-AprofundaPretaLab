@@ -1,38 +1,30 @@
-import request from "supertest";
-import mongoose from 'mongoose';
-import app from "../../src/index";
-import { getTransactionById } from '../../src/modules/transactions/transaction';
+import { createTransactionRepository } from '../../src/modules/transactions/transaction.repository.factory';
+import { Transaction } from '../../src/modules/transactions/transaction.entitie';
 
-describe("getTransactionById", () => {
+describe("getTransactionById (unit)", () => {
+  let repo = createTransactionRepository();
   let transactionId: string;
 
-  beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URL || "default");
-  });
-
   beforeEach(async () => {
-    const newTransaction = {
-      date: "2025-01-02T00:00:00Z",
-      description: "Nova transação",
-      amount: 200,
-      type: "expense",
-      category: "Teste",
-    };
+    const newTransaction = new Transaction(
+      "",
+      200,
+      "Nova transação",
+      "2025-01-02T00:00:00Z",
+      "expense",
+      "Teste"
+    );
 
-    const response = await request(app)
-      .post("/api/transactions")
-      .send(newTransaction);
-
-    transactionId = response.body._id;
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
+    const created = await repo.save(newTransaction);
+    transactionId = created.id;
   });
 
   it("deve retornar uma transação pelo id", async () => {
-    const result = await getTransactionById(transactionId);
+    const result = await repo.findById(transactionId);
 
     expect(result).toHaveProperty("description", "Nova transação");
+    expect(result.amount).toBe(200);
+    expect(result.type).toBe("expense");
+    expect(result.category).toBe("Teste");
   });
 });

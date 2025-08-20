@@ -1,30 +1,23 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env' });
+import { createTransactionRepository } from '../../src/modules/transactions/transaction.repository.factory';
+import { Transaction } from '../../src/modules/transactions/transaction.entitie';
 
-import mongoose from 'mongoose';
-import { createTransaction } from '../../src/modules/transactions/transaction';
-
-describe("createTransaction", () => {
-
-  beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URL || "default");
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
-  });
+describe("createTransaction (unit)", () => {
+  let repo = createTransactionRepository();
 
   it("deve criar uma nova transação com sucesso", async () => {
-    const transactionData = {
-      date: "2025-01-01T00:00:00Z",
-      description: "Teste criação",
-      amount: 100,
-      type: "income",
-      category: "Teste",
-    };
+    const transactionData = new Transaction(
+      "",
+      100,
+      "Teste criação",
+      "2025-01-01T00:00:00Z",
+      "income",
+      "Teste"
+    );
 
-    const result = await createTransaction(transactionData);
+    const result = await repo.save(transactionData);
 
-    expect(result.category).toMatch(transactionData.category);
+    expect(result.category).toBe(transactionData.category);
+    expect(result.amount).toBe(transactionData.amount);
+    expect(result.description).toBe(transactionData.description);
   });
 });

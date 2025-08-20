@@ -6,7 +6,6 @@ export interface Product {
   price: number;
 }
 
-// Lista todos os produtos
 export async function getAllProducts(): Promise<Product[]> {
   const products = await ProductModel.find();
   return products.map(p => ({
@@ -14,16 +13,6 @@ export async function getAllProducts(): Promise<Product[]> {
     name: p.name,
     price: p.price,
   }));
-}
-
-// Cria um novo produto
-export async function createProduct(product: Product): Promise<Product> {
-  const created = await ProductModel.create(product);
-  return {
-    id: created._id.toString(),
-    name: created.name,
-    price: created.price,
-  };
 }
 
 export async function getProductById(id: string): Promise<Product> {

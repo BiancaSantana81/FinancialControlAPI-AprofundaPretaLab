@@ -7,11 +7,12 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  MONGODB_URL: ${{ secrets.MONGODB_URL }}
+
 jobs:
   test-unit:
     runs-on: ubuntu-latest
-    env:
-      MONGODB_URL: ${{ secrets.MONGODB_URL }}
 
     strategy:
       matrix:
@@ -31,13 +32,9 @@ jobs:
 
     - name: Run unit tests
       run: npm run test:unit
-      env:
-        MONGODB_URL: ${{ secrets.MONGODB_URL }}
 
   test-integration:
     runs-on: ubuntu-latest
-    env:
-      MONGODB_URL: ${{ secrets.MONGODB_URL }}
 
     strategy:
       matrix:
