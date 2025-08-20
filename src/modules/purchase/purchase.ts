@@ -1,28 +1,36 @@
-import { PurchaseModel } from "./purchase.model";
+import { Purchase } from "./purchase.entitie";
+import { createPurchaseRepository } from "./purchase.repository.factory";
 
-export async function createPurchase(purchaseData: any) {
-  const { cart, total } = purchaseData;
+const repo = createPurchaseRepository();
 
-  if (!cart || !Array.isArray(cart)) throw new Error("Dados da compra inválidos.");
-
-  if (total > 20000) throw new Error("O valor total da compra excede o limite de R$20.000.");
-
-  const purchase = await PurchaseModel.create({
-    cart,
-    total,
-  });
-
-  return purchase.toObject();
-}
-
-export async function getAllPurchases() {
-  return await PurchaseModel.find().sort({ date: -1 });
-}
-
-export async function getPurchaseById(id: string) {
-  const purchase = await PurchaseModel.findById(id);
-  if (!purchase) {
-    throw new Error("Compra não encontrada.");
+export async function createPurchase(data: Omit<Purchase, "id">): Promise<Purchase> {
+  // ✅ validações
+  if (!data.cart || !Array.isArray(data.cart)) {
+    throw new Error("Dados da compra inválidos.");
   }
-  return purchase.toObject();
+
+  if (data.total > 20000) {
+    throw new Error("O valor total da compra excede o limite de R$20.000.");
+  }
+
+  const purchase = new Purchase(
+    "",
+    data.cart,
+    data.total,
+    data.date || new Date()
+  );
+
+  return await repo.save(purchase);
+}
+
+export async function getAllPurchases(): Promise<Purchase[]> {
+  const purchases = await repo.findAll();
+
+  return purchases.sort((a, b) => b.date.getTime() - a.date.getTime());
+}
+
+export async function getPurchaseById(id: string): Promise<Purchase> {
+  const purchase = await repo.findById(id);
+  if (!purchase) throw new Error("Compra não encontrada.");
+  return purchase;
 }
