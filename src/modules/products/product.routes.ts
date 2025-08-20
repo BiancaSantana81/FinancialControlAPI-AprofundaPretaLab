@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { getAllProducts, getProductById } from "./product";
+import { getProducts } from "../../shared/services/products";
 
 export const productsRouter = Router();
 
-// GET /api/products
 productsRouter.get("/", async (_req, res) => {
-  const products = await getAllProducts();
+  const products = await getProducts();
   res.json(products);
 });
+
 
 // GET /api/products/:id
 productsRouter.get("/:id", async (req, res) => {
