@@ -1,22 +1,16 @@
 import request from "supertest";
-import mongoose from "mongoose";
 import app from "../../src/index";
+import { createTransaction } from "../../src/modules/transactions/transaction";
 
-describe("Transações (com database)", () => {
+// força uso do repositório em memória
+process.env.NODE_ENV = "test";
 
-  let newTransaction: any;
-  let transactionResponse: any;
-
-  beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URL || "default");
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
+describe("Transações (em memória)", () => {
+  let transactionId: string;
 
   beforeEach(async () => {
-    newTransaction = {
+
+    const transactionData = {
       date: "2025-01-02T00:00:00Z",
       description: "Transação de teste",
       amount: 100,
@@ -24,30 +18,33 @@ describe("Transações (com database)", () => {
       category: "Teste",
     };
 
+
     const response = await request(app)
       .post("/api/transactions")
-      .send(newTransaction);
+      .send(transactionData);
 
-    transactionResponse = response.body;
-
+    transactionId = response.body.id;
   });
 
-
-  describe("GET /transactions", () => {
-
-    it("deve retornar uma transação do database", async () => {
-      const response = await request(app).get(`/api/transactions/${transactionResponse._id}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("description", "Transação de teste");
-    });
+  it("deve retornar uma transação pelo ID", async () => {
+    const response = await request(app).get(`/api/transactions/${transactionId}`);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("description", "Transação de teste");
+    expect(response.body).toHaveProperty("amount", 100);
   });
 
-    it("deve retornar 404 se a transação não existir", async () => {
-      const fakeId = new mongoose.Types.ObjectId();
-      const response = await request(app).get(`/api/transactions/${fakeId}`);
+  it("deve retornar 404 se a transação não existir", async () => {
+    const response = await request(app).get(`/api/transactions/fake-id`);
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("message", "Transaction not found");
+  });
 
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("message", "Transaction not found");
-    });
+  it("deve retornar todas as transações", async () => {
+    const response = await request(app).get("/api/transactions");
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body[0]).toHaveProperty("id");
+    expect(response.body[0]).toHaveProperty("description", "Transação de teste");
+  });
 });

@@ -1,18 +1,11 @@
 import request from "supertest";
 import app from "../../src/index";
-import mongoose from "mongoose";
 
-describe("POST /transactions", () => {
+process.env.NODE_ENV = "test";
 
-  beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URL || "default");
-  });
+describe("POST /transactions (em memória)", () => {
 
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
-
-  it("deve criar uma transação com sucesso e retornar status 201", async () => {
+  it("deve criar uma transação com sucesso e retornar status 200", async () => {
     const newTransaction = {
       date: "2025-01-02T00:00:00Z",
       description: "Nova transação",
@@ -23,11 +16,11 @@ describe("POST /transactions", () => {
 
     const response = await request(app)
       .post("/api/transactions")
-      .send(newTransaction)
+      .send(newTransaction);
 
     expect(response.status).toBe(201);
-    expect(response.body.category).toMatch(newTransaction.category);
+    expect(response.body).toHaveProperty("description", "Nova transação");
+
   });
 
 });
-

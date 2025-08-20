@@ -23,7 +23,7 @@ export class MongoPurchaseRepository implements PurchaseRepository {
 
   async findById(id: string): Promise<Purchase> {
     const doc = await PurchaseModel.findById(id).exec();
-    if (!doc) throw new Error("Purchase not found");
+    if (!doc) throw new Error("Compra não encontrada.");
     return this.toEntity(doc);
   }
 

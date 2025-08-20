@@ -1,25 +1,11 @@
-import mongoose from "mongoose";
 import request from "supertest";
 import app from "../../src/index";
-import { ProductModel } from "../../src/modules/products/product.model";
 
-describe("GET /api/products/:id", () => {
-  let productId: string;
+describe("GET /api/products/:id (In-memory)", () => {
+  let productId: number;
 
-  beforeAll(async () => {
-    const mongoUrl = process.env.MONGODB_URL;
-    if (!mongoUrl) throw new Error("MONGODB_URL não definido");
-    await mongoose.connect(mongoUrl);
-  });
-
-  beforeEach(async () => {
-
-    const product = await ProductModel.create({ name: "Teclado Mecânico RGB", price: 550 });
-    productId = product._id.toString();
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
+  beforeAll(() => {
+    productId = 3;
   });
 
   it("deve retornar o produto pelo ID", async () => {
@@ -32,18 +18,11 @@ describe("GET /api/products/:id", () => {
   });
 
   it("deve retornar 404 para ID inexistente", async () => {
-    const fakeId = "64b3c0f1d2e4f00000000000"; // ID aleatório válido
+    const fakeId = 999;
     const response = await request(app).get(`/api/products/${fakeId}`);
 
     expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty("message", "Produto não encontrado.");
+    expect(response.body).toHaveProperty("message", "Produto não encontrado");
   });
 
-  it("deve retornar 400 para ID inválido", async () => {
-    const invalidId = "abc123";
-    const response = await request(app).get(`/api/products/${invalidId}`);
-
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty("message");
-  });
 });

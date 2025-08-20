@@ -1,34 +1,17 @@
-import mongoose from "mongoose";
 import request from "supertest";
 import app from "../../src/index";
-import { ProductModel } from "../../src/modules/products/product.model";
 
-describe("POST /api/checkout", () => {
-  let productA: any;
-  let productB: any;
+process.env.NODE_ENV = "test";
 
-  beforeAll(async () => {
-    const mongoUrl = process.env.MONGODB_URL;
-    if (!mongoUrl) throw new Error("MONGODB_URL não definido");
-    await mongoose.connect(mongoUrl);
-  });
-
-  beforeEach(async () => {
-    productA = await ProductModel.create({ name: "Notebook Gamer Pro", price: 7500 });
-    productB = await ProductModel.create({ name: "Mouse Sem Fio Ultra-leve", price: 350 });
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
-  });
+describe("POST /api/checkout (em memória)", () => {
 
   it("deve processar uma compra válida com sucesso", async () => {
     const purchaseData = {
       cart: [
-        { productId: productA._id.toString(), quantity: 1, name: productA.name, price: productA.price },
-        { productId: productB._id.toString(), quantity: 2, name: productB.name, price: productB.price },
+        { productId: 1, quantity: 1, name: "Notebook Gamer Pro", price: 7500 },
+        { productId: 2, quantity: 2, name: "Mouse Sem Fio Ultra-leve", price: 350 },
       ],
-      total: productA.price * 1 + productB.price * 2,
+      total: 7500 + 350 * 2,
     };
 
     const response = await request(app)
@@ -40,10 +23,9 @@ describe("POST /api/checkout", () => {
   });
 
   it("deve retornar erro se o total exceder R$20.000", async () => {
-    const expensiveProduct = await ProductModel.create({ name: "PC Gamer Ultra", price: 21000 });
     const purchaseData = {
-      cart: [{ productId: expensiveProduct._id.toString(), quantity: 1, name: expensiveProduct.name, price: expensiveProduct.price }],
-      total: 21000,
+      cart: [{ productId: 1, quantity: 3, name: "Notebook Gamer Pro", price: 7500 }],
+      total: 22500,
     };
 
     const response = await request(app)
@@ -55,11 +37,11 @@ describe("POST /api/checkout", () => {
   });
 
   it("deve retornar erro se os dados forem inválidos", async () => {
-    const invalidData = { total: 500 };
+    const purchaseData = { total: 500 };
 
     const response = await request(app)
       .post("/api/checkout")
-      .send(invalidData);
+      .send(purchaseData);
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("message", "Dados da compra inválidos.");

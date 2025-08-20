@@ -13,7 +13,7 @@ export class InMemoryPurchaseRepository implements PurchaseRepository {
 
   async findById(id: string): Promise<Purchase> {
     const purchase = this.purchases.find(p => p.id === id);
-    if (!purchase) throw new Error("Purchase not found");
+    if (!purchase) throw new Error("Compra não encontrada.");
     return purchase;
   }
 
