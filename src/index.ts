@@ -13,10 +13,10 @@ app.get("/", (_req, res) => {
 });
 
 // Rotas agrupadas por módulo
-app.use("/api/products", productsRouter);
-app.use("/api/checkout", checkoutRouter);
-app.use("/api/purchases", purchaseRouter);
-app.use("/api/transactions", transactionsRouter);
+app.use("/products", productsRouter);
+app.use("/checkout", checkoutRouter);
+app.use("/purchases", purchaseRouter);
+app.use("/transactions", transactionsRouter);
 
 // Rota AI
 app.post("/ai", async (req, res) => {

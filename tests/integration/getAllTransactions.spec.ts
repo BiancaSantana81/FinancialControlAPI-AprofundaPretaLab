@@ -16,7 +16,7 @@ describe("Transações (In-memory)", () => {
     };
 
     const response = await request(app)
-      .post("/api/transactions")
+      .post("/transactions")
       .send(newTransaction);
 
     transactionResponse = response.body;
@@ -24,7 +24,7 @@ describe("Transações (In-memory)", () => {
 
   describe("GET /transactions", () => {
     it("deve retornar todas as transações em memória", async () => {
-      const response = await request(app).get("/api/transactions");
+      const response = await request(app).get("/transactions");
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);

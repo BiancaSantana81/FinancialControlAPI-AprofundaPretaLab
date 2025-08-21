@@ -20,7 +20,7 @@ describe("Purchases API - GET routes (In-memory)", () => {
   });
 
   it("deve retornar todas as compras", async () => {
-    const response = await request(app).get("/api/purchases");
+    const response = await request(app).get("/purchases");
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -28,7 +28,7 @@ describe("Purchases API - GET routes (In-memory)", () => {
   });
 
   it("deve retornar uma compra pelo ID", async () => {
-    const response = await request(app).get(`/api/purchases/${purchaseId}`);
+    const response = await request(app).get(`/purchases/${purchaseId}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id", purchaseId);
@@ -36,7 +36,7 @@ describe("Purchases API - GET routes (In-memory)", () => {
   });
 
   it("deve retornar 404 se a compra não existir", async () => {
-    const response = await request(app).get(`/api/purchases/fake-id`);
+    const response = await request(app).get(`/purchases/fake-id`);
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("message", "Compra não encontrada.");
   });

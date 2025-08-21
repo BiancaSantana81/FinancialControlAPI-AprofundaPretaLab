@@ -15,12 +15,11 @@ describe("POST /transactions (em memória)", () => {
     };
 
     const response = await request(app)
-      .post("/api/transactions")
+      .post("/transactions")
       .send(newTransaction);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("description", "Nova transação");
 
   });
-
 });

@@ -14,7 +14,7 @@ describe("Products API Integration ", () => {
       });
 
     const response = await request(app)
-      .get("/api/products");
+      .get("/products");
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({

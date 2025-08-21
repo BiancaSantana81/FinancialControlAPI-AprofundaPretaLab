@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../src/index";
 
-describe("GET /api/products/:id (In-memory)", () => {
+describe("GET /products/:id (In-memory)", () => {
   let productId: number;
 
   beforeAll(() => {
@@ -9,7 +9,7 @@ describe("GET /api/products/:id (In-memory)", () => {
   });
 
   it("deve retornar o produto pelo ID", async () => {
-    const response = await request(app).get(`/api/products/${productId}`);
+    const response = await request(app).get(`/products/${productId}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id", productId);
@@ -19,7 +19,7 @@ describe("GET /api/products/:id (In-memory)", () => {
 
   it("deve retornar 404 para ID inexistente", async () => {
     const fakeId = 999;
-    const response = await request(app).get(`/api/products/${fakeId}`);
+    const response = await request(app).get(`/products/${fakeId}`);
 
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("message", "Produto não encontrado");

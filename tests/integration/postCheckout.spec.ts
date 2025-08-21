@@ -3,7 +3,7 @@ import app from "../../src/index";
 
 process.env.NODE_ENV = "test";
 
-describe("POST /api/checkout (em memória)", () => {
+describe("POST /checkout (em memória)", () => {
 
   it("deve processar uma compra válida com sucesso", async () => {
     const purchaseData = {
@@ -15,7 +15,7 @@ describe("POST /api/checkout (em memória)", () => {
     };
 
     const response = await request(app)
-      .post("/api/checkout")
+      .post("/checkout")
       .send(purchaseData);
 
     expect(response.status).toBe(200);
@@ -29,7 +29,7 @@ describe("POST /api/checkout (em memória)", () => {
     };
 
     const response = await request(app)
-      .post("/api/checkout")
+      .post("/checkout")
       .send(purchaseData);
 
     expect(response.status).toBe(400);
@@ -40,7 +40,7 @@ describe("POST /api/checkout (em memória)", () => {
     const purchaseData = { total: 500 };
 
     const response = await request(app)
-      .post("/api/checkout")
+      .post("/checkout")
       .send(purchaseData);
 
     expect(response.status).toBe(400);

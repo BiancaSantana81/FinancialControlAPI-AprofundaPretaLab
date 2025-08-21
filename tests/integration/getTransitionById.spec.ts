@@ -20,27 +20,27 @@ describe("Transações (em memória)", () => {
 
 
     const response = await request(app)
-      .post("/api/transactions")
+      .post("/transactions")
       .send(transactionData);
 
     transactionId = response.body.id;
   });
 
   it("deve retornar uma transação pelo ID", async () => {
-    const response = await request(app).get(`/api/transactions/${transactionId}`);
+    const response = await request(app).get(`/transactions/${transactionId}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("description", "Transação de teste");
     expect(response.body).toHaveProperty("amount", 100);
   });
 
   it("deve retornar 404 se a transação não existir", async () => {
-    const response = await request(app).get(`/api/transactions/fake-id`);
+    const response = await request(app).get(`/transactions/fake-id`);
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("message", "Transaction not found");
   });
 
   it("deve retornar todas as transações", async () => {
-    const response = await request(app).get("/api/transactions");
+    const response = await request(app).get("/transactions");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body.length).toBeGreaterThan(0);
