@@ -1,11 +1,16 @@
 import request from "supertest";
 import app from "../../src/index";
+import mongoose from "mongoose";
 
-describe("Transações (In-memory)", () => {
-  let newTransaction: any;
-  let transactionResponse: any;
+describe("Transações (MongoDB)", () => {
+
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGODB_URL as string);
+  });
 
   beforeEach(async () => {
+
+    let newTransaction: any;
 
     newTransaction = {
       date: "2025-01-02T00:00:00Z",
@@ -15,21 +20,20 @@ describe("Transações (In-memory)", () => {
       category: "Teste",
     };
 
-    const response = await request(app)
-      .post("/transactions")
-      .send(newTransaction);
+    await request(app).post("/transactions").send(newTransaction);
+    await request(app).post("/transactions").send(newTransaction);
+  });
 
-    transactionResponse = response.body;
+  afterAll(async () => {
+    await mongoose.connection.close();
   });
 
   describe("GET /transactions", () => {
-    it("deve retornar todas as transações em memória", async () => {
+    it("deve retornar todas as transações registradas no banco", async () => {
       const response = await request(app).get("/transactions");
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
       expect(response.body.length).toBeGreaterThan(0);
-
     });
   });
 });

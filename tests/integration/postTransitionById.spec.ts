@@ -1,9 +1,15 @@
 import request from "supertest";
 import app from "../../src/index";
+import mongoose from "mongoose";
 
-process.env.NODE_ENV = "test";
+describe("POST /transactions (MongoDB)", () => {
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGODB_URL as string);
+  });
 
-describe("POST /transactions (em memória)", () => {
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
 
   it("deve criar uma transação com sucesso e retornar status 200", async () => {
     const newTransaction = {
