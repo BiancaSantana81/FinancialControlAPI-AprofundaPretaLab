@@ -1,15 +1,12 @@
 import mongoose from "mongoose";
 import request from "supertest";
 import app from "../../src/index";
-import { ChatHistory } from "../../src/shared/utils/chatHistory.model";
 import { financialAssitant } from "../../src/shared/adapters/gemini";
 import { geminiInteral } from "../../src/shared/utils/gemini";
-
 
 import dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 
-// Mock do Gemini
 jest.mock("../../src/shared/adapters/gemini", () => ({
     __esModule: true,
     financialAssitant: jest.fn(),
