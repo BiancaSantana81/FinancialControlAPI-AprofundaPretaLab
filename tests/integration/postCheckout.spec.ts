@@ -1,9 +1,18 @@
 import request from "supertest";
 import app from "../../src/index";
+import mongoose from "mongoose";
 
 process.env.NODE_ENV = "test";
 
-describe("POST /checkout (em memória)", () => {
+describe("POST /checkout (MongoDB)", () => {
+
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGODB_URL as string);
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
 
   it("deve processar uma compra válida com sucesso", async () => {
     const purchaseData = {

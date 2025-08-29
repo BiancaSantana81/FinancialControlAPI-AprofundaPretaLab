@@ -1,12 +1,13 @@
 import request from "supertest";
 import app from "../../src/index";
-import { createTransaction } from "../../src/modules/transactions/transaction";
+import mongoose from "mongoose";
 
-// força uso do repositório em memória
-process.env.NODE_ENV = "test";
-
-describe("Transações (em memória)", () => {
+describe("Transações (MongoDB)", () => {
   let transactionId: string;
+
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGODB_URL as string);
+  });
 
   beforeEach(async () => {
 
@@ -24,6 +25,10 @@ describe("Transações (em memória)", () => {
       .send(transactionData);
 
     transactionId = response.body.id;
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
   });
 
   it("deve retornar uma transação pelo ID", async () => {

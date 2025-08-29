@@ -1,30 +1,45 @@
-import { chat, generateText } from "../adapters/gemini";
+import { getAllTransactions } from "../../modules/transactions/transaction";
+import { financialAssitant } from "../adapters/gemini";
+import { ChatRepository } from "../utils/chatHistory.repository";
 import { geminiInteral } from "../utils/gemini";
 
-const chatHistory: any = [];
+const chatRepo = new ChatRepository();
 
-function buildMessage(role: string, text: string) {
+export const handleConversation = async (
+  prompt: string,
+  repo: ChatRepository = chatRepo,                // <-- parâmetro opcional
+  transactionContext = getAllTransactions        // <-- parâmetro opcional
+) => {
+  const transactionData = await transactionContext();
 
-    chatHistory.push(
-        {
-            role,
-            parts: [{ text }],
-        }
+  await repo.createMessage("user", prompt);
 
-    );
-}
+  const chatHistory = await repo.getAllMessages("asc");
 
-export const handleConversation = async (prompt: string) => {
+  const data = await financialAssitant(chatHistory, transactionData);
+  const { response } = await geminiInteral(data);
 
-    buildMessage("user", prompt);
+  await repo.createMessage("model", response);
 
-    const data = await chat(chatHistory);
-    const { response } = geminiInteral(data);
+  return {
+    response,
+    chatHistory,
+  };
+};
 
-    buildMessage("model", response);
+// export const handleConversation = async (prompt: string) => {
+//     const transactionData = await transactionContext();
 
-    return {
-        response,
-        chatHistory,
-    };
-}
+//     await chatRepo.createMessage("user", prompt);
+
+//     const chatHistory = await chatRepo.getAllMessages("asc");
+
+//     const data = await financialAssitant(chatHistory, transactionData);
+//     const { response } = geminiInteral(data);
+
+//     await chatRepo.createMessage("model", response);
+//     return {
+//         response,
+//         chatHistory,
+//     };
+// }

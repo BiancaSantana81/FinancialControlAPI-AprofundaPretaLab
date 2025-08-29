@@ -1,12 +1,17 @@
 import request from "supertest";
 import app from "../../src/index";
 import { createPurchase } from "../../src/modules/purchase/purchase";
+import mongoose from "mongoose";
 
-describe("Purchases API - GET routes (In-memory)", () => {
+describe("Purchases API - GET routes (MongoDB)", () => {
   let purchaseId: string;
   let purchaseData: any;
 
   beforeAll(async () => {
+    await mongoose.connect(process.env.MONGODB_URL as string);
+  });
+
+  beforeEach(async () => {
     purchaseData = {
       cart: [
         { productId: "1", name: "Notebook Gamer Pro", price: 7500, quantity: 1 },
@@ -14,9 +19,12 @@ describe("Purchases API - GET routes (In-memory)", () => {
       ],
       total: 7850,
     };
-
     const purchase = await createPurchase(purchaseData);
     purchaseId = purchase.id;
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
   });
 
   it("deve retornar todas as compras", async () => {
