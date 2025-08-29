@@ -1,6 +1,5 @@
 import { getAllTransactions } from "../../modules/transactions/transaction";
-import { chat, financialAssitant, generateText } from "../adapters/gemini";
-import { ChatHistory } from "../utils/chatHistory.model";
+import { financialAssitant } from "../adapters/gemini";
 import { ChatRepository } from "../utils/chatHistory.repository";
 import { geminiInteral } from "../utils/gemini";
 
@@ -15,7 +14,7 @@ export const handleConversation = async (prompt: string) => {
     const chatHistory = await chatRepo.getAllMessages("asc");
 
     const data = await financialAssitant(chatHistory, transactionData);
-    const { response } = await geminiInteral(data);
+    const { response } = geminiInteral(data);
 
     await chatRepo.createMessage("model", response);
     return {
